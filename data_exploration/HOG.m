@@ -20,8 +20,8 @@ end
 
 img = data2im(images);
 % Extract HOG features and HOG visualization
-[hog_4x4, vis4x4] = extractHOGFeatures(img,'CellSize',[2 2]);
-[hog_4x4, vis4x4] = extractHOGFeatures(img,'CellSize',[4 4]);
+[hog, vis] = extractHOGFeatures(img,'CellSize',[2 2]);
+[hog, vis] = extractHOGFeatures(img,'CellSize',[4 4]);
 
 % Show the original image
 figure; 
@@ -29,17 +29,17 @@ subplot(2,2,1:2); imshow(img);
 
 % Visualize the HOG features
 subplot(2,2,3);  
-plot(vis4x4); 
-title({'CellSize = [2 2]'; ['Length = ' num2str(length(hog_4x4))]});
+plot(vis); 
+title({'CellSize = [2 2]'; ['Length = ' num2str(length(hog))]});
 
 subplot(2,2,4);
-plot(vis4x4); 
-title({'CellSize = [4 4]'; ['Length = ' num2str(length(hog_4x4))]});
+plot(vis); 
+title({'CellSize = [4 4]'; ['Length = ' num2str(length(hog))]});
 
 
 %% HOG 2
 cellSize = [4 4];
-hogFeatureSize = length(hog_4x4);
+hogFeatureSize = length(hog);
 
 images = prnist([1],[1:10]);
 
@@ -84,12 +84,12 @@ figure(2);
 
 for i=1:length(a)
     im = data2im(a(i));help 
-    [hog_4x4, vis4x4] = extractHOGFeatures(im,'CellSize',[4 4]);
+    [hog, vis] = extractHOGFeatures(im,'CellSize',[4 4]);
     figure(i);
     subplot(1,2,1);
     imshow(im);
     subplot(1,2,2);
-    plot(vis4x4);
+    plot(vis);
 end
 
 %% test with the classifier, following https://it.mathworks.com/help/vision/examples/digit-classification-using-hog-features.html
@@ -98,7 +98,7 @@ close all;
 clc;
 prwaitbar off;
 
-a = prnist([0:4],[1:2]);
+a = prnist([0:9],[1:20]);
 %figure(1)
 %show(a);
 
@@ -107,9 +107,9 @@ preproc = im_box([],0,1)*im_resize([],[32 32])*im_box([],1,0);
 a = a*preproc;
 pr_a = prdataset(a);
 
-[hog_4x4, vis4x4] = extractHOGFeatures(data2im(a(1)),'CellSize',[4 4]);
-cellSize = [4 4];
-hogFeatureSize = length(hog_4x4);
+cellSize = [2 2];
+[hog, vis] = extractHOGFeatures(data2im(a(1)),'CellSize',cellSize);
+hogFeatureSize = length(hog);
 
 % Loop over the trainingSet and extract HOG features from each image. A
 % similar procedure will be used to extract features from the testSet.
@@ -129,3 +129,27 @@ for i=1:10
     title(trainingLabels(i));
 end
 
+classifier = fitcecoc(trainingFeatures, trainingLabels);
+
+
+
+%create test set
+tst = prnist([0:9],[21])*preproc;
+show(tst);
+pr_tst = prdataset(tst);
+numImages = length(tst);
+testFeatures = zeros(numImages, hogFeatureSize, 'single');
+
+for i = 1:numImages
+    img = data2im(tst(i));    
+    testFeatures(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);  
+end
+testLabels = getfield(struct(pr_tst), "nlab")-1;
+
+predictedTestLabels = predict(classifier, testFeatures);
+
+% Tabulate the results using a confusion matrix.
+confMat = confusionmat(testLabels, predictedTestLabels);
+
+testLabels'
+predictedTestLabels'
