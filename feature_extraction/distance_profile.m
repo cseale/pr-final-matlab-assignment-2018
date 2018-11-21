@@ -1,4 +1,4 @@
-function [dist_profile] = distance_profile(i)
+function dist_profile = distance_profile(i)
 
 % first count from top and zero out rows where there are no non-zero value
 [sel_top, ind_top] = max(i, [], 1);

@@ -30,7 +30,7 @@ b = prdataset(dist_profile, getlab(a));
 
 [test, train, idx_test, idx_train] = gendat(b, 24, 1);
 
-prcrossval(b, svc, 10, 1);
+prcrossval(
 
 % w = svc(train);
 % 
