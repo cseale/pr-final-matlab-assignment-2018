@@ -11,6 +11,9 @@
 clear;
 close all;
 
+% Exploration of Water Resevoir method
+addpath('../feature_extraction/');
+
 % load data file
 a = prnist([0:9],[1:40:1000]);
 
@@ -21,25 +24,8 @@ a1 = a1*im_box(0,1)
 a1 = a1*im_resize([32 32])
 % convert to matrix
 i = data2im(a1);
-
-% first count from top and zero out rows where there are no non-zero value
-[sel_top, ind_top] = max(i, [], 1);
-results_top = sel_top .* ind_top;
-
-% distance profile from bottom
-[sel_bottom, ind_bottom] = max(flip(i), [], 1);
-results_bottom = sel_bottom .* ind_bottom;
-
-% distance profile from left
-[sel_left, ind_left] = max(i, [], 2);
-results_left = (sel_left .* ind_left)';
-
-% distance profile from right
-[sel_right, ind_right] = max(flip(i, 2), [], 2);
-results_right = (sel_right .* ind_right)';
-
-% create resulting distance profile
-dist_profile = [results_top results_left results_bottom results_right];
+% calculate the distance profile
+dist_profile = distance_profile(i);
 
 plot(dist_profile)
 
