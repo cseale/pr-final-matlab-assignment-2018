@@ -1,4 +1,4 @@
-%% HOG
+%% HOG visualization
 
 % Hog is sensible to image orientation -> we need to find a way to rotate
 % images.
@@ -26,141 +26,20 @@ plot(vis4x4);
 title({'CellSize = [4 4]'; ['Length = ' num2str(length(hog4x4))]});
 
 
-%% HOG 2
-cellSize = [4 4];
-hogFeatureSize = length(hog);
 
-images = prnist([1],[1:10]);
-
-
-numImages = length(images);
-trainingFeatures = zeros(numImages, hogFeatureSize, 'single');
-
-for i = 1:numImages
-    img = data2im(images(i));    
-    
-    trainingFeatures(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);  
-end
-
-trainingLabels = zeros(numImages, 1);
-
-
-
-
-
-
-
-
-%% perform image conversion and visualize HOGs
+%% Test svc classifier 
 clear;
 close all;
 clc;
-prwaitbar off;
 
-a = prnist([0:3],[1]);
+digits = prnist([0:9],[1:190]);
 
-preproc = im_box([],0,1)*im_resize([],[32 32])*im_box([],1,0);
-tr_a = a*preproc;
-
-figure(1);
-show(a);
-figure(2);
-show(tr_a);
-
-%features = im_features(a, a, 'all');
-
-for i=1:length(tr_a)
-    im = data2im(tr_a(i));help 
-    [hog, vis] = extractHOGFeatures(im,'CellSize',[2 2]);
-    figure(i);
-    subplot(1,2,1);
-    imshow(im);
-    subplot(1,2,2);
-    plot(vis);
-end
-
-%% test with the classifier, following https://it.mathworks.com/help/vision/examples/digit-classification-using-hog-features.html
-clear;
-close all;
-clc;
-prwaitbar off;
-
-a = prnist([0:9],[1:2]);
-%figure(1)
-%show(a);
-
-%preproc = im_box([],0,1)*im_rotate*im_resize([],[128 128])*im_box([],1,0);
-preproc = im_box([],0,1)*im_resize([],[32 32])*im_box([],1,0);
-a = a*preproc;
-pr_a = prdataset(a);
-
-cellSize = [2 2];
-[hog, vis] = extractHOGFeatures(data2im(a(1)),'CellSize',cellSize);
-hogFeatureSize = length(hog);
-
-% Loop over the trainingSet and extract HOG features from each image. A
-% similar procedure will be used to extract features from the testSet.
-
-numImages = length(a);
-trainingFeatures = zeros(numImages, hogFeatureSize, 'single');
-
-for i = 1:numImages
-    img = data2im(a(i));    
-    trainingFeatures(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);  
-end
-
-trainingLabels = getfield(struct(pr_a), "nlab")-1;
-
-for i=1:10
-    subplot(4,3,i); plot(trainingFeatures(i, :));
-    title(trainingLabels(i));
-end
-
-classifier = fitcecoc(trainingFeatures, trainingLabels);
-
-
-
-%create test set
-tst = prnist([0:9],[21])*preproc;
-show(tst);
-pr_tst = prdataset(tst);
-numImages = length(tst);
-testFeatures = zeros(numImages, hogFeatureSize, 'single');
-
-for i = 1:numImages
-    img = data2im(tst(i));    
-    testFeatures(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);  
-end
-testLabels = getfield(struct(pr_tst), "nlab")-1;
-
-predictedTestLabels = predict(classifier, testFeatures);
-
-% Tabulate the results using a confusion matrix.
-confMat = confusionmat(testLabels, predictedTestLabels);
-
-testLabels'
-predictedTestLabels'
-
-
-
-
-
-
-
-
-
-
-
-%% Test data handling
-clear;
-close all;
-clc;
-prwaitbar off;
-
-digits = prnist([0:2],[1]);
-
-preproc = im_box([],0,1)*im_resize([],[32 32])*im_box([],1,0);
+preproc = im_box([],0,1)*im_resize([],[32 32], 'bicubic')*im_box([],1,0);
 a = digits*preproc;
+
+
+features = im_features(a, a, 'all');
+
 
 % this is done once to get the length of the generated features
 cellSize = [4 4]; % [2 2] seems to yield the best result (still to verify) but it takes too much for the training
@@ -180,11 +59,11 @@ end
 trainingLabels = getlabels(digits);
 pr_a = prdataset(trainingFeatures, trainingLabels);
 
-w = qdc(pr_a);
+w = svc(pr_a);
 
 %create test set
-test_digits = prnist([0:2],[21])*preproc;
-%show(tst);
+test_digits = prnist([0:9],[191:200])*preproc;
+show(test_digits);
 numTestImages = length(test_digits);
 testFeatures = zeros(numTestImages, hogFeatureSize);
 
@@ -195,4 +74,39 @@ end
 testLabels = getlabels(test_digits);
 pr_tst = prdataset(testFeatures, testLabels);
 
+
 res = w(pr_tst);
+
+confmat(res);
+testc(pr_tst, w)
+
+
+%% TEST svc with HOG features
+clear;
+close all;
+clc;
+prwaitbar on;
+
+digits = prnist([0:9], [1:50]);
+preproc = im_box([],0,1)*im_resize([],[32 32], 'bicubic')*im_box([],1,0);
+design_set = digits*preproc;
+
+
+% this is done once to get the length of the generated features
+cellSize = [8 8];
+[hog, vis] = extractHOGFeatures(data2im(design_set(1)),'CellSize',cellSize);
+hogFeatureSize = length(hog);
+
+% Loop over the trainingSet and extract HOG features from each image. A
+% similar procedure will be used to extract features from the testSet.
+numImages = length(design_set);
+features = zeros(numImages, hogFeatureSize);
+for i = 1:numImages
+    img = data2im(design_set(i));    
+    features(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);  
+end
+
+labels = getlabels(digits);
+a = prdataset(features, labels);
+
+res1 = prcrossval(a,svc,50,1);
