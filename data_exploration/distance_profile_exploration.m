@@ -28,13 +28,60 @@ dist_profile =  cell2mat(arrayfun(@(x) distance_profile(cell2mat(x)), img, 'un',
 % convert to pr dataset
 b = prdataset(dist_profile, getlab(a));
 
-[test, train, idx_test, idx_train] = gendat(b, 24, 1);
+[test, train, idx_test, idx_train] = gendat(b, 25, 1);
 
-prcrossval(b, svc, 10, 1);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing KNN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% w = svc(train);
-% 
-% testc(train, w);
-% confmat(w(test));
+for k = 1:10
+    k
+    prcrossval(b, knnc([], k), 10, 1);
+end
+
+% K Fold Cross Val returned 8 as best classifier
+w_knnc = knnc(train, 4);
+testc(test, w_knnc);
+confmat(w_knnc(test));
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing Parzen
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+prcrossval(b, parzenc, 10, 1);
+w_parzenc = parzenc(train, 4);
+testc(test, w_parzenc);
+confmat(w_parzenc(test));
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing Fisher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+prcrossval(b, fisherc, 10, 1);
+w_fisherc = fisherc(train);
+testc(test, w_fisherc);
+confmat(w_fisherc(test));
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing QDC
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for i=0:10
+    for j=0:5
+        i
+        j
+        prcrossval(b, qdc([], .1*i, .1*j), 10, 1);
+    end
+end
+
+% best performing regularisation params are .2 and .1
+w_qdc = qdc(train, .2, .1);
+testc(test, w_qdc);
+confmat(w_qdc(test));
+
+
+
 
 

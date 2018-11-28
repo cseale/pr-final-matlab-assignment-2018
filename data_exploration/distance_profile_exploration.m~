@@ -19,7 +19,7 @@ a = prnist([0:9]);
 
 % resize image, pad the end with zeros if needed
 a = a*im_box(0,1)
-a = a*im_resize([32 32])
+a = a*im_resize([24 24])
 % convert to matrix
 img = data2im(a);
 % calculate the distance profile for all images
@@ -28,13 +28,54 @@ dist_profile =  cell2mat(arrayfun(@(x) distance_profile(cell2mat(x)), img, 'un',
 % convert to pr dataset
 b = prdataset(dist_profile, getlab(a));
 
-[test, train, idx_test, idx_train] = gendat(b, 24, 1);
+[test, train, idx_test, idx_train] = gendat(b, 200, 1);
 
-prcrossval(
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing KNN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% w = svc(train);
-% 
-% testc(train, w);
-% confmat(w(test));
+for k = 1:10
+    k
+    prcrossval(b, knnc([], k), 10, 1);
+end
+
+% K Fold Cross Val returned 8 as best classifier
+w_knnc = knnc(train, 4);
+testc(test, w_knnc);
+confmat(w_knnc(test));
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing Parzen
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+prcrossval(b, parzenc, 10, 1);
+w_parzenc = parzenc(train, 4);
+testc(test, w_parzenc);
+confmat(w_parzenc(test));
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing Fisher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+prcrossval(b, fisherc, 10, 1);
+w_fisherc = fisherc(train);
+testc(test, w_fisherc);
+confmat(w_fisherc(test));
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Testing QDC
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for i=0
+
+prcrossval(b, qdc([], .1, .1), 10, 1);
+w_qdc = qdc(train, .1, .1);
+testc(test, w_qdc);
+confmat(w_qdc(test));
+
+
+
 
 
