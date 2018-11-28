@@ -9,7 +9,7 @@
 % in this function.
 
 
-function a_pca=my_rep(m)
+function a=my_rep(m)
 preproc = im_box([],0,1)*im_resize([],[24 24], 'bicubic')*im_box([],1,0);
 design_set = m*preproc;
 
@@ -31,6 +31,6 @@ end
 labels = getlabels(m);
 a = prdataset(features, labels);
 
-[w, frac] = pcam(a, 100);
-a_pca = a*w;
+% [w, frac] = pcam(a, 100);
+% a_pca = a*w;
 end
