@@ -68,14 +68,7 @@ confmat(w_fisherc(test));
 %% Testing QDC
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-for i=0:10
-    for j=0:5
-        i
-        j
-        prcrossval(b, qdc([], .1*i, .1*j), 10, 1);
-    end
-end
-
+prcrossval(b, qdc([], .2, .1), 10, 5);
 % best performing regularisation params are .2 and .1
 w_qdc = qdc(train, .2, .1);
 testc(test, w_qdc);
