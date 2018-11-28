@@ -204,4 +204,4 @@ a_pca = a*w;
 [err,b] = prcrossval(a_pca,knnc([],3),25, 5);
 fprintf("PCA %d -> %dnn: Error: %d - Std: %d\n",value, knn, err, b);
 
-classifier = knnc(a_pca, 3);
+classifier = knnc(a, 3);
