@@ -88,12 +88,12 @@ clc;
 prwaitbar on;
 
 digits = prnist([0:9], [1:100]);
-preproc = im_box([],0,1)*im_resize([],[32 32], 'bicubic')*im_box([],1,0);
+preproc = im_box([],0,1)*im_resize([],[24 24], 'bicubic')*im_box([],1,0);
 design_set = digits*preproc;
 
 
 % this is done once to get the length of the generated features
-cellSize = [8 8];
+cellSize = [4 4];
 [hog, vis] = extractHOGFeatures(data2im(design_set(1)),'CellSize',cellSize);
 hogFeatureSize = length(hog);
 
@@ -109,4 +109,20 @@ end
 labels = getlabels(digits);
 a = prdataset(features, labels);
 
-res1 = prcrossval(a,svc,25,1);
+[w, frac] = pcam(a, 700);
+a_pca = a*w;
+
+[SvcERR,SvcCERR,SvcNLAB_OUT] = prcrossval(a_pca,svc,10, 1); %0.05 without PCA, 0.0260 with PCA(150)
+[QdcERR,QdcCERR,QdcNLAB_OUT] = prcrossval(a_pca,qdc,10, 1); % , 0.1870 with PCA(50)
+[LdcERR,LdcCERR,LdcNLAB_OUT] = prcrossval(a_pca,ldc,10, 1); % 0.0410 without PCA, 0.0320 PCA(150), 
+[FisherERR,FisherCERR,FisherNLAB_OUT] = prcrossval(a_pca,fisherc,10, 1); % 0.055 without PCA, 0.0360 PCA(150), 
+[LogERR,LogCERR,LogNLAB_OUT] = prcrossval(a,logmlc,10, 1); % shit
+
+
+[ParzERR,ParzCERR,ParzNLAB_OUT] = prcrossval(a_pca,parzenc,10, 1); % 0.0270 without PCA, 0.0250 with PCA(150) 
+[nn3ERR,nn3CERR,nn3NLAB_OUT] = prcrossval(a,knnc([],3),10, 1); % 0.0240 without PCA, 
+[nn4ERR,nn4CERR,nn4NLAB_OUT] = prcrossval(a_pca,knnc([],4),10, 1); % 0.0190 PCA(700), 
+[nn5ERR,nn5CERR,nn5NLAB_OUT] = prcrossval(a_pca,knnc([],5),10, 1); % 0.0220 without PCA, 0.0210 PCA(150), 
+
+
+%% TEST bicubic + 
