@@ -1,13 +1,18 @@
 function [output] = transform_images(A)
-    a = A;
+    temp = A;
 
     b = [];
 
-    for n = -0.5:0.1:0.5
-        a = im_rotate(A, n);
-        b = [b; a];
+    for n = 1:10
+        r_transform = -.5 + (.5+.5)*rand(1,1)
+        r_rotate = -.25 + (.25+.25)*rand(1,1)
+        r = [1 0 0; r_transform 1 0; 0 0 1];
+        tform = maketform('affine',r);
+        temp = A*mapm('imtransform', tform);
+        temp = im_rotate(temp, r_rotate);
+        b = [b; temp];
     end
     
-    output = b
+    output = [A; b]
 end
 
