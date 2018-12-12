@@ -19,6 +19,8 @@ cellSize = [8 8];
 [hog, vis] = extractHOGFeatures(data2im(design_set(1)),'CellSize',cellSize);
 hogFeatureSize = length(hog);
 
+% Loop over the trainingSet and extract HOG features from each image. A
+% similar procedure will be used to extract features from the testSet.
 numImages = length(design_set);
 features = zeros(numImages, hogFeatureSize);
 for i = 1:numImages
@@ -29,4 +31,6 @@ end
 labels = getlabels(design_set);
 a = prdataset(features, labels);
 
+% [w, frac] = pcam(a, 100);
+% a_pca = a*w;
 end
