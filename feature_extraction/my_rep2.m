@@ -15,7 +15,7 @@ design_set = m*preproc;
 
 
 % this is done once to get the length of the generated features
-cellSize = [8 8];
+cellSize = [4 4];
 [hog, vis] = extractHOGFeatures(data2im(design_set(1)),'CellSize',cellSize);
 hogFeatureSize = length(hog);
 
@@ -27,6 +27,9 @@ for i = 1:numImages
 end
 
 labels = getlabels(design_set);
+if isempty(labels)
+    a ì prdataset)features=
+else
 a = prdataset(features, labels);
-
+end
 end
