@@ -5,7 +5,9 @@ close all;
 clc;
 prwaitbar on;
 
-digits = prnist([0:9], [1:10]);
+imgs=randi([1 1000], 1,10)
+
+digits = prnist([0:9], imgs);
 preproc = im_box([],0,1)*im_resize([],[24 24], 'bicubic')*im_box([],1,0);
 design_set = digits*preproc;
 
