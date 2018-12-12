@@ -201,7 +201,8 @@ a = prdataset(features, labels);
 
 [w, frac] = pcam(a, 100);
 a_pca = a*w;
-[err,b] = prcrossval(a_pca,knnc([],3),25, 5);
+[err,b] = prcrossval(a,knnc([],3),25, 5);
 fprintf("PCA %d -> %dnn: Error: %d - Std: %d\n",value, knn, err, b);
 
 classifier = knnc(a, 3);
+
