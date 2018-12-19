@@ -93,7 +93,7 @@ design_set = digits*preproc;
 
 
 % this is done once to get the length of the generated features
-cellSize = [4 4];
+cellSize = [8 8];
 [hog, vis] = extractHOGFeatures(data2im(design_set(1)),'CellSize',cellSize);
 hogFeatureSize = length(hog);
 
@@ -199,10 +199,42 @@ labels = getlabels(digits);
 a = prdataset(features, labels);
 
 
-[w, frac] = pcam(a, 100);
 a_pca = a*w;
 [err,b] = prcrossval(a,knnc([],3),25, 5);
 fprintf("PCA %d -> %dnn: Error: %d - Std: %d\n",value, knn, err, b);
 
 classifier = knnc(a, 3);
 
+%% test with pca
+clear;
+close all;
+clc;
+prwaitbar on;
+
+cellSize = [4 4];
+
+
+digits = prnist([0:9], [1:50]);
+preproc = im_box([],0,1)*im_resize([],[24 24], 'bicubic')*im_box([],1,0);
+design_set = digits*preproc;
+
+% this is done once to get the length of the generated features
+[hog, vis] = extractHOGFeatures(data2im(design_set(1)),'CellSize',cellSize);
+hogFeatureSize = length(hog);
+
+% Loop over the trainingSet and extract HOG features from each image. A
+% similar procedure will be used to extract features from the testSet.
+numImages = length(design_set);
+features = zeros(numImages, hogFeatureSize);
+for i = 1:numImages
+    img = data2im(design_set(i));    
+    features(i, :) = extractHOGFeatures(img, 'CellSize', cellSize);  
+end
+
+labels = getlabels(digits);
+a = prdataset(features, labels);
+
+w = scalem([],'variance')*pcam([],0.9);
+
+[err,b] = prcrossval(a,knnc([], 3),10,5);
+[err_pca,b_pca] = prcrossval(a,w*knnc([], 3),10, 5);
