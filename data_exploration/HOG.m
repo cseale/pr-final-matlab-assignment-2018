@@ -32,7 +32,7 @@ clear;
 close all;
 clc;
 
-digits = prnist([0:9],[1:190]);
+digits = prnist([0:9],[1:500]);
 
 preproc = im_box([],0,1)*im_resize([],[32 32], 'bicubic')*im_box([],1,0);
 a = digits*preproc;
@@ -211,10 +211,10 @@ close all;
 clc;
 prwaitbar on;
 
-cellSize = [4 4];
+cellSize = [8 8];
 
 
-digits = prnist([0:9], [1:50]);
+digits = prnist([0:9], [1:500]);
 preproc = im_box([],0,1)*im_resize([],[24 24], 'bicubic')*im_box([],1,0);
 design_set = digits*preproc;
 

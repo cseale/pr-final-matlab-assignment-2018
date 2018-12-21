@@ -30,7 +30,4 @@ end
 
 labels = getlabels(m);
 a = prdataset(features, labels);
-
-% [w, frac] = pcam(a, 100);
-% a_pca = a*w;
 end
