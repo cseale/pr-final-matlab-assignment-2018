@@ -18,6 +18,9 @@ clsf = knnc([], 3);
 for t = transformations
     output = transform_images(trn, t, t);
     trn_feats = my_rep(output);
-    err(i) = prcrossval(tst_feats,clsf,folds,iters);
+    w = trn_feats*clsf;
+    err(i) = tst_feats*w*testc;
     i = i + 1;
 end
+
+save('transformation_err_curves.mat')
