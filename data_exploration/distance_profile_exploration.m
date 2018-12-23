@@ -63,7 +63,15 @@ w_fisherc = fisherc(train);
 testc(test, w_fisherc);
 confmat(w_fisherc(test));
 
+a = a*im_box(0,1)
+a = a*im_resize([32 32])
+% convert to matrix
+img = data2im(a);
+% calculate the distance profile for all images
+dist_profile =  cell2mat(arrayfun(@(x) distance_profile(cell2mat(x)), img, 'un',0)');
 
+% convert to pr dataset
+b = prdataset(dist_profile, getlab(a));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Testing QDC
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
