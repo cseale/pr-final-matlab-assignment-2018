@@ -2,7 +2,7 @@ clc;
 clear all;
 close all;
 
-trn = prnist([0:9],[1:10]);
+trn = prnist([0:9],[1]);
 tst = prnist([0:9],[11:1000]);
 
 
@@ -24,3 +24,9 @@ for t = transformations
 end
 
 save('transformation_err_curves.mat')
+
+
+plot(transformations(1:end-1), err(1:end-1))
+title('Error Curve for Transformation')
+xlabel('Transformation')
+ylabel('Classification Error')

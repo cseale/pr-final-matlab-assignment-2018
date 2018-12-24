@@ -62,21 +62,5 @@ end
 
 fprintf("all done. \n");
 
-
-
-folds = 10;
-iters = 10;
-i = 0;
-err = [];
-for c = 1:length(classifiers)
-    %no pca
-    err(c) = prcrossval(b,classifiers(c),folds,iters);
-    % pca
-    err_pca(c) = prcrossval(b,w*classifiers(c),folds,iters);
-    fprintf("finished crossval. \n");
-end
-
-fprintf("all done. \n");
-
 save('distance_profiles_errors.mat')
 
