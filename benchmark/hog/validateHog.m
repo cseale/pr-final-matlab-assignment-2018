@@ -28,3 +28,9 @@ w = scalem([],'variance')*pcam([],0.9); %pca
 [err4x4_noBic_pca,b_4x4_noBic_pca] = prcrossval(Hog4x4_noBic,w*clsf,folds,iters);
 [err8x8_bic_pca,b_8x8_bic_pca] = prcrossval(Hog8x8_bic,w*clsf,folds,iters);
 [err8x8_noBic_pca,b_8x8_noBic_pca] = prcrossval(Hog8x8_noBic,w*clsf,folds,iters);
+
+%% confusion matrix
+[trn, tst] = gendat(Hog8x8_noBic, [400;400;400;400;400;400;400;400;400;400]);
+w = knnc(trn, 4);
+lab1 = getlabels(tst); lab2 = tst*w*labeld;
+mat = confmat(lab1, lab2)
