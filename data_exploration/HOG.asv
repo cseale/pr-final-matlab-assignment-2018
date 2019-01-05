@@ -214,7 +214,7 @@ prwaitbar on;
 cellSize = [4 4];
 
 
-digits = prnist([0:9], [1:1000]);
+digits = prnist([0:9], [1:2]);
 preproc = im_box([],0,1)*im_resize([],[24 24], 'bicubic')*im_box([],1,0);
 design_set = digits*preproc;
 
@@ -234,12 +234,15 @@ end
 labels = getlabels(digits);
 a = prdataset(features, labels);
 
-ret_vars = [0.7 0.725 0.75 0.775 0.8 0.825 0.85 0.875 0.9 0.925 0.95 0.975];
-errs = [];
+ret_vars = [0.8 0.825 0.85 0.875 0.9 0.925 0.95 0.975];
 for i =1:length(ret_vars)
-    w = scalem([],'variance')*pcam([],ret_vars(i));
+    w = scalem([],'variance')*pcam([],0.9);
     [err_pca,b_pca] = prcrossval(a,w*knnc([], 3),10, 2);
-    errs = [errs err_pca]; 
 end
 
-plot(ret_vars, errs)
+
+w = scalem([],'variance')*pcam([],0.9); %define
+mapping = a*w; %mapping
+% new_trn = mapping(trn_feats); %mapped dataset
+% clsf = knnc(new_trn, 3);
+
