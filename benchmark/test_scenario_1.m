@@ -17,4 +17,4 @@ err = nist_eval('my_rep', mapping*clsf, 100);
 % err = nist_eval('my_rep', clsf, 100);
 fprintf("Done.");
 
-save('trn_feats_4x4_bic', 'trn_feats')
+save('trn_feats_4x4_bic', 'trn_feats', 'mapping', 'clsf');
