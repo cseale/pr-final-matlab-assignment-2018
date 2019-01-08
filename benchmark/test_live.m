@@ -40,6 +40,7 @@ live_tst = prdataset(im2obj(images), labels);
 live_tst_feats = my_rep(live_tst);
 
 confmat(live_tst_feats*mapping*clsf)
+testc(live_tst_feats*mapping*clsf)
 
 
 
