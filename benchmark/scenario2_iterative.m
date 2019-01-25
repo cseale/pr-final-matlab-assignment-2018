@@ -13,7 +13,7 @@ for i=1:10
     fprintf('augment dataset');
     trn_feats = my_rep(trn_set);
     fprintf('Feature extracted.');
-    w = scalem([],'variance')*pcam([],0.9); %define
+    w = scalem([],'variance')*pcam([],0.8); %define
     mapping = trn_feats*w; %mapping
     new_trn = mapping(trn_feats); %mapped dataset
     [clsf, k, e] = knnc(new_trn, 3); % trained classifier
