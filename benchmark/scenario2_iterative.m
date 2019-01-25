@@ -16,7 +16,7 @@ for i=1:10
     w = scalem([],'variance')*pcam([],0.8); %define
     mapping = trn_feats*w; %mapping
     new_trn = mapping(trn_feats); %mapped dataset
-    [clsf, k, e] = knnc(new_trn, 3); % trained classifier
+    clsf = fisherc(new_trn); % trained classifier
     fprintf("Classifier trainied");
     err = nist_eval('my_rep', mapping*clsf, 100);
     errors=[errors err];
